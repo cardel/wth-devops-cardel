@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  app:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: npm run dev
+    environment:
+      MONGODB_URI: mongodb://db:27017
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:
+
+networks:
+  app-network:
