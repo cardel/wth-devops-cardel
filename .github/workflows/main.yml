@@ -35,51 +35,6 @@ jobs:
           inlineScript: |
             az group create --name ${{ vars.AZURE_RG }} --location eastus
 
-      - name: Create Azure Container Apps Environment (if not exists)
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az containerapp env show --name ${{ vars.AZURE_PREFIX }}containerappenvironment --resource-group ${{ vars.AZURE_RG }} || az containerapp env create --name ${{ vars.AZURE_PREFIX }}containerappenvironment --resource-group ${{ vars.AZURE_RG }} --location eastus
-
-      - name: Log in to ACR
-        run: |
-          az acr login --name ${{ vars.AZURE_PREFIX }}acr
-
-      - name: Pull MongoDB Image
-        run: |
-          docker pull mongo:latest
-      - name: Build and Push DB Image to ACR
-        run: |
-          docker-compose -f docker-compose.yml build db
-          docker tag mongo:latest ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
-          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
-
-      - name: Build and Push App Image to ACR
-        run: |
-          docker-compose -f docker-compose.yml build app
-          docker tag node:20 ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
-          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
-
-      - name: Deploy to Azure Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          appSourcePath: ${{ github.workspace }}
-          acrName: ${{ vars.AZURE_PREFIX }}acr
-          resourceGroup: ${{ vars.AZURE_RG }}
-          containerAppName: ${{ vars.AZURE_PREFIX }}containerapp
-          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenvironment
-          image: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
-          location: eastus
-          containers: |
-            - name: app
-              image: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
-              env:
-                - name: MONGODB_URI
-                  value: "mongodb://db:27017"
-            - name: db
-              image: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
-
       - name: Build and deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
@@ -87,5 +42,5 @@ jobs:
           acrName: ${{ vars.AZURE_PREFIX }}acr
           resourceGroup: ${{ vars.AZURE_RG }}
           containerAppName: ${{ vars.AZURE_PREFIX }}containerapp
-          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenvironment
+          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
           location: eastus
