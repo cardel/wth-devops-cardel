@@ -43,6 +43,6 @@ jobs:
           appSourcePath: ${{ github.workspace }}
           acrName: ${{ vars.AZURE_PREFIX }}acr
           resourceGroup: ${{ vars.AZURE_RG }}
-          containerAppName: ${{ vars.AZURE_PREFIX }}contapp
+          containerAppName: ${{ vars.AZURE_PREFIX }}containerappenvironment
           containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenvironment
           location: eastus
