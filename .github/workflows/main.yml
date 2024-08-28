@@ -55,6 +55,7 @@ jobs:
       - name: Build and Push DB Image to ACR
         run: |
           docker-compose -f docker-compose.yml build db
+          docker image ls
           docker tag mongo:latest ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
           docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
 
