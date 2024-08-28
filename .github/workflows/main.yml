@@ -46,6 +46,9 @@ jobs:
         run: |
           az acr login --name ${{ vars.AZURE_PREFIX }}acr
 
+      - name: Pull MongoDB Image
+        run: |
+          docker pull mongo:latest
       - name: Build and Push DB Image to ACR
         run: |
           docker-compose -f docker-compose.yml build db
