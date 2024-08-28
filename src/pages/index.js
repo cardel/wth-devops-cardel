@@ -2,13 +2,14 @@ import Link from "next/link";
 import dbConnect from "../lib/dbConnect";
 import Pet from "../models/Pet";
 import Hours from "../components/Hours";
+import Contact from "../components/Contact";
 
 // TODO: Import Hours component
 
 const Index = ({ pets }) => {
   return (
     <>
-      {/* TODO: Display Hours component */ <Hours />}
+      {<Hours />}
 
       {/* Create a card for each pet */}
       {pets.map((pet) => (
@@ -50,6 +51,7 @@ const Index = ({ pets }) => {
           </div>
         </div>
       ))}
+      {<Contact email="cardel87@gmail.com" />}
     </>
   );
 };
