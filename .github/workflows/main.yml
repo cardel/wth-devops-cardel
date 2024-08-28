@@ -46,19 +46,17 @@ jobs:
         run: |
           az acr login --name ${{ vars.AZURE_PREFIX }}acr
 
+      - name: Build and Push DB Image to ACR
+        run: |
+          docker-compose -f docker-compose.yml build db
+          docker tag mongo:latest ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
+          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
+
       - name: Build and Push App Image to ACR
         run: |
           docker-compose -f docker-compose.yml build app
           docker tag node:20 ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
           docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
-
-      - name: Build and Push DB Image to ACR
-        run: |
-          docker-compose -f docker-compose.yml build db
-          sleep(10)
-          docker images
-          docker tag mongo:latest ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
-          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
 
       - name: Deploy to Azure Container App
         uses: azure/container-apps-deploy-action@v1
