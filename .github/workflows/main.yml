@@ -35,7 +35,21 @@ jobs:
           inlineScript: |
             az group create --name ${{ vars.AZURE_RG }} --location eastus
 
-      - name: Build and deploy Container db
+      - name: Build and push MongoDB image
+        run: |
+          cd ${{ github.workspace }}/mongodb
+          docker-compose build db
+          docker tag $(docker-compose images -q db) ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
+          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
+
+      - name: Build and push Node.js app image
+        run: |
+          cd ${{ github.workspace }}
+          docker-compose build app
+          docker tag $(docker-compose images -q app) ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
+          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
+
+      - name: Deploy MongoDB Container App
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}/mongodb
@@ -44,8 +58,9 @@ jobs:
           containerAppName: ${{ vars.AZURE_PREFIX }}containeradb
           containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
           location: eastus
+          image: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/db:latest
 
-      - name: Build and deploy Container App
+      - name: Deploy Node.js Container App
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}
@@ -54,3 +69,4 @@ jobs:
           containerAppName: ${{ vars.AZURE_PREFIX }}containerapp
           containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
           location: eastus
+          image: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/app:latest
