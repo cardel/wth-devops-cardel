@@ -29,7 +29,8 @@ jobs:
           azcliversion: latest
           inlineScript: |
             az group create --name ${{ vars.AZURE_RG }} --location eastus
-
+      - name: Login in az AZ ACR
+        run: az login acr {{vars.AZURE_PREFIX}}
       - name: Build and push Node.js image
         run: |
           docker build -t ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest .
