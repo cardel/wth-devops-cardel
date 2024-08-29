@@ -42,27 +42,30 @@ jobs:
           docker build -t ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest .
           docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest
           cd ..
-      - name: Deploy Node.js Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          appSourcePath: ${{ github.workspace }}
-          acrName: ${{ vars.AZURE_PREFIX }}acr
-          resourceGroup: ${{ vars.AZURE_RG }}
-          containerAppName: ${{ vars.AZURE_PREFIX }}containerapp
-          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
-          location: eastus
-          containerImage: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest
 
       - name: Deploy MongoDB Container App
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          appSourcePath: ${{ github.workspace }}/mongodb
-          acrName: ${{ vars.AZURE_PREFIX }}acr
-          resourceGroup: ${{ vars.AZURE_RG }}
-          containerAppName: ${{ vars.AZURE_PREFIX }}containeradb
-          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
-          location: eastus
-          containerImage: ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest
+        run: |
+          az containerapp revision copy \
+            --name ${{ vars.AZURE_PREFIX }}containeradb \
+            --resource-group ${{ vars.AZURE_RG }} \
+            --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest \
+            --cpu 1 \
+            --memory 1Gi \
+            --registry-server ${{ vars.AZURE_PREFIX }}acr.azurecr.io \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Deploy Node.js Container App
+        run: |
+          az containerapp revision copy \
+            --name ${{ vars.AZURE_PREFIX }}containerapp \
+            --resource-group ${{ vars.AZURE_RG }} \
+            --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest \
+            --cpu 1 \
+            --memory 1Gi \
+            --registry-server ${{ vars.AZURE_PREFIX }}acr.azurecr.io \
+            --registry-username ${{ secrets.ACR_USERNAME }} \
+            --registry-password ${{ secrets.ACR_PASSWORD }}
 
       - name: Configure Environment Variables for Node.js
         run: |
