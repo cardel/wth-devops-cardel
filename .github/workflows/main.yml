@@ -35,6 +35,16 @@ jobs:
           inlineScript: |
             az group create --name ${{ vars.AZURE_RG }} --location eastus
 
+      - name: Build and deploy Container db
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}/mongodb
+          acrName: ${{ vars.AZURE_PREFIX }}acr
+          resourceGroup: ${{ vars.AZURE_RG }}
+          containerAppName: ${{ vars.AZURE_PREFIX }}containeradb
+          containerAppEnvironment: ${{ vars.AZURE_PREFIX }}containerappenv
+          location: eastus
+
       - name: Build and deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
