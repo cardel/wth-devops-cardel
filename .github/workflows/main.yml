@@ -36,22 +36,6 @@ jobs:
           docker build -t ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest .
           docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest
 
-      - name: Build and push MongoDB image
-        run: |
-          cd mongodb
-          docker build -t ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest .
-          docker push ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest
-          cd ..
-
-      - name: Deploy MongoDB Container App
-        run: |
-          az containerapp revision copy \
-            --name ${{ vars.AZURE_PREFIX }}containeradb \
-            --resource-group ${{ vars.AZURE_RG }} \
-            --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest \
-            --cpu 1 \
-            --memory 2Gi \
-
       - name: Deploy Node.js Container App
         run: |
           az containerapp revision copy \
@@ -66,4 +50,4 @@ jobs:
           az containerapp env update \
             --name ${{ vars.AZURE_PREFIX }}containerapp \
             --resource-group ${{ vars.AZURE_RG }} \
-            --set envs=[{"name":"MONGODB_URI","value":"mongodb://$(az containerapp show --name ${{ vars.AZURE_PREFIX }}containeradb --resource-group ${{ vars.AZURE_RG }} --query "properties.configuration.ingress.fqdn" -o tsv):27017"}]
+          --set-env-vars MONGODB_URI="mongodb://cads87containeradb:27017"
