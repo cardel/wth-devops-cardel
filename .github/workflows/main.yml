@@ -47,7 +47,7 @@ jobs:
 
       - name: Configure Environment Variables for Node.js
         run: |
-          az containerapp env update \
+          az containerapp update \
             --name ${{ vars.AZURE_PREFIX }}containerapp \
             --resource-group ${{ vars.AZURE_RG }} \
-          --set-env-vars MONGODB_URI="mongodb://cads87containeradb:27017"
+            --set-env-vars MONGODB_URI="mongodb://cads87containeradb:27017"
