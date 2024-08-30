@@ -50,7 +50,7 @@ jobs:
             --resource-group ${{ vars.AZURE_RG }} \
             --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest \
             --cpu 1 \
-            --memory 1Gi \
+            --memory 2Gi \
 
       - name: Deploy Node.js Container App
         run: |
@@ -59,7 +59,7 @@ jobs:
             --resource-group ${{ vars.AZURE_RG }} \
             --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest \
             --cpu 1 \
-            --memory 1Gi \
+            --memory 2Gi \
 
       - name: Configure Environment Variables for Node.js
         run: |
