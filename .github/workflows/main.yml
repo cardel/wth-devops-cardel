@@ -51,9 +51,6 @@ jobs:
             --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/mongodb:latest \
             --cpu 1 \
             --memory 1Gi \
-            --registry-server ${{ vars.AZURE_PREFIX }}acr.azurecr.io \
-            --registry-username ${{ secrets.ACR_USERNAME }} \
-            --registry-password ${{ secrets.ACR_PASSWORD }}
 
       - name: Deploy Node.js Container App
         run: |
@@ -63,9 +60,6 @@ jobs:
             --image ${{ vars.AZURE_PREFIX }}acr.azurecr.io/node-app:latest \
             --cpu 1 \
             --memory 1Gi \
-            --registry-server ${{ vars.AZURE_PREFIX }}acr.azurecr.io \
-            --registry-username ${{ secrets.ACR_USERNAME }} \
-            --registry-password ${{ secrets.ACR_PASSWORD }}
 
       - name: Configure Environment Variables for Node.js
         run: |
